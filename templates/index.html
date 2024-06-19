@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #camera {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .gallery img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Face Recognition</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-center">Camera</h3>
+                <img id="camera" src="{{ url_for('video_feed') }}" alt="Camera feed">
+                <button class="btn btn-danger btn-block mt-3" onclick="stopCamera()">Stop Camera</button>
+            </div>
+            <div class="col-md-6">
+                <h3 class="text-center">Recognized Photos</h3>
+                <div id="gallery" class="gallery row"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadGallery() {
+            fetch('/gallery')
+                .then(response => response.json())
+                .then(data => {
+                    const gallery = document.getElementById('gallery');
+                    gallery.innerHTML = '';
+                    data.forEach(photo => {
+                        let col = document.createElement('div');
+                        col.className = 'col-md-4 mb-3';
+                        let img = document.createElement('img');
+                        img.src = photo.path;
+                        img.className = 'img-fluid';
+                        let timestamp = document.createElement('p');
+                        timestamp.className = 'text-center';
+                        timestamp.textContent = `Tomada a las: ${photo.timestamp}`;
+                        col.appendChild(img);
+                        col.appendChild(timestamp);
+                        gallery.appendChild(col);
+                    });
+                })
+                .catch(error => console.error('Error loading gallery:', error));
+        }
+
+        window.onload = () => {
+            loadGallery();
+        };
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
